@@ -1,0 +1,53 @@
+// Top-level build.gradle (project-level)
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        // jcenter ab deprecated hai, lekin Tuya SDK ke liye zaruri
+        maven { url "https://jcenter.bintray.com/" }
+        maven { url "https://maven-other.tuya.com/repository/maven-releases/" }
+        maven { url "https://maven-other.tuya.com/repository/maven-commercial-releases/" }
+        maven { url "https://jitpack.io" }
+        maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://developer.huawei.com/repo/" }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.1'  // AGP 8.x compatible
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10"
+        
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jcenter.bintray.com/" }
+        maven { url "https://maven-other.tuya.com/repository/maven-releases/" }
+        maven { url "https://maven-other.tuya.com/repository/maven-commercial-releases/" }
+        maven { url "https://jitpack.io" }
+        maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://developer.huawei.com/repo/" }
+    }
+}
+
+// Root project build directory
+rootProject.buildDir = "../build"
+
+// Subprojects ke liye custom build directory
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+
+// Ensure app module evaluation pehle ho
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+// Clean task
+tasks.register("clean", Delete) {
+    delete rootProject.layout.buildDirectory
+}

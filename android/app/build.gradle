@@ -1,0 +1,78 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'dev.flutter.flutter-gradle-plugin'
+}
+
+android {
+    namespace = "com.iot.basic"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.iot.basic"
+        minSdkVersion flutter.minSdkVersion
+        targetSdk = 34
+        versionCode 1
+        versionName "1.0"
+
+        multiDexEnabled = true
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    packaging {
+        resources {
+            pickFirsts.add("lib/*/libc++_shared.so")
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
+
+configurations.all {
+    exclude group: "com.thingclips.smart", module: "thingsmart-modularCampAnno"
+}
+
+dependencies {
+    implementation fileTree(include: ["*.aar"], dir: "libs")
+
+    // Tuya SmartLife SDK
+    implementation("com.thingclips.smart:thingsmart:6.7.3")
+
+    // FastJSON
+    implementation("com.alibaba:fastjson:1.1.67.android")
+
+    // OkHttp
+    implementation("com.squareup.okhttp3:okhttp-urlconnection:3.14.9")
+
+    // AndroidX + Material
+    implementation("androidx.multidex:multidex:2.0.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.9.0")
+}
