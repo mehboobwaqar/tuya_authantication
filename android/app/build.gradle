@@ -64,6 +64,9 @@ dependencies {
 
     // Tuya SmartLife SDK
     implementation("com.thingclips.smart:thingsmart:6.7.3")
+    
+    // Tuya User SDK (required for IResultCallback)
+    implementation("com.thingclips.smart:thingsmart-user:6.7.3")
 
     // FastJSON
     implementation("com.alibaba:fastjson:1.1.67.android")
@@ -76,3 +79,4 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
 }
+

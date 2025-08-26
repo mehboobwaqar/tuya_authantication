@@ -64,9 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     return null;
                   },
-                  onSaved: (value){
-                    _emailText = value!;
-                  },
+                 
                   ),
               
                 const SizedBox(height: 15),
@@ -84,9 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     return null; 
                   },
-                   onSaved: (value){
-                    _passwordText = value!;
-                  },
+                  //  onSaved: (value){
+                  //   _passwordText = value!;
+                  // },
                   ),
             
                 const SizedBox(height: 20),

@@ -5,13 +5,13 @@ class InputField extends StatefulWidget {
   final IconData? prefixIcon;
   final bool obscureText; 
   final String? Function(String?)? validator;
-  final void Function(String?)? onSaved;
+  final TextEditingController? controller;
 
   const InputField({
     super.key,
     this.hintText,
     this.prefixIcon,
-    this.onSaved,
+    this.controller,
     this.obscureText = false,
     this.validator,
   });
@@ -34,7 +34,7 @@ class _InputFieldState extends State<InputField> {
     return TextFormField(
       obscureText: _isObscure,
       validator: widget.validator,
-      onSaved: widget.onSaved,
+      controller: widget.controller,
       decoration: InputDecoration(
         prefixIcon: widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
         hintText: widget.hintText,
