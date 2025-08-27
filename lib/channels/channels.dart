@@ -1,25 +1,31 @@
 import 'package:flutter/services.dart';
 
 class Channels {
-
   static const platform = MethodChannel("com.iot.basic.channel");
 
-  static Future<void> getVerifactionCode(Map<String, dynamic> data) async{
-
-    try{
+  // Get Verification Code
+  static Future<String> getVerificationCode(Map<String, dynamic> data) async {
+    try {
       final result = await platform.invokeMethod('getVerificationCode', data);
-      print(result);
-    } on PlatformException catch(e){
-      print({"error": "Failed to get data from native code: '${e.message}'."});
+      return result.toString();
+    } on PlatformException catch (e) {
+      return "Error: ${e.message}";
+    } catch (e) {
+      return "Unexpected error: $e";
     }
   }
-  static Future<void> signupWithVerificationCode(Map<String, dynamic> data) async {
 
+  // Signup with Verification Code
+  static Future<String> signupWithVerificationCode(
+      Map<String, String> data) async {
     try {
-      final result = await platform.invokeMethod('signupWithVerificationCode', data);
-      print(result);
+      final result =
+          await platform.invokeMethod('signupWithVerificationCode', data);
+      return result.toString();
     } on PlatformException catch (e) {
-      print({"error": "Failed to get data from native code: '${e.message}'."});
+      return "Error: ${e.message}";
+    } catch (e) {
+      return "Unexpected error: $e";
     }
   }
 }

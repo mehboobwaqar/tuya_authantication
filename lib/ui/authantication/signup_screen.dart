@@ -18,7 +18,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _verificationController = TextEditingController();
+  final TextEditingController _verificationController =
+      TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -34,41 +35,62 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void _getVerifactionCode() {
-    final email = _emailController.text.trim();
-
+  // Get Verification Code
+  void _getVerificationCode() async {
     if (_selectedCountry == null) {
-      Utils.snackBar('Please select your country', context);
+      Utils.snackBar('Please select your country',Colors.red, context);
       return;
     }
 
-    if (email.isEmpty || !RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email)) {
-      Utils.snackBar('Enter a valid email', context);
+    if (_emailController.text.isEmpty ||
+        !RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
+            .hasMatch(_emailController.text)) {
+      Utils.snackBar('Enter a valid email',Colors.red, context);
       return;
     }
 
-    Channels.getVerifactionCode({
-      "email": email,
+    setState(() => _isUploading = true);
+
+    final response = await Channels.getVerificationCode({
+      "email": _emailController.text,
       "country": _selectedCountry!.name,
       "countryCode": _selectedCountry!.phoneCode,
     });
-    Utils.snackBar('Verification code requested', context);
+
+    setState(() => _isUploading = false);
+ if(response == "Verification code sent successfully"){
+ Utils.snackBar(response,Colors.blue, context);
+ }else{
+  Utils.snackBar(response,Colors.red, context);
+ }
+   
   }
 
-  void _onSubmitted() {
+  // Signup
+  void _onSubmitted() async {
     if (_formKey.currentState!.validate()) {
-      if (_selectedCountry == null) {
-        Utils.snackBar('Please select your country', context);
-        return;
+      setState(() => _isUploading = true);
+
+      final response = await Channels.signupWithVerificationCode({
+        "email": _emailController.text,
+        "country": _selectedCountry!.name,
+        "countryCode": _selectedCountry!.phoneCode,
+        "password": _passwordController.text,
+        "verificationCode": _verificationController.text
+      });
+
+      setState(() => _isUploading = false);
+
+      if (response.toLowerCase().contains("User registered successfully")) {
+        Utils.snackBar("Signup Successful",Colors.blue, context);
+
+        // Redirect to login screen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      } else {
+        Utils.snackBar(" $response",Colors.red, context);
       }
-
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
-      final name = _nameController.text.trim();
-      final code = _verificationController.text.trim();
-
-      print("Signup Data: $email, $name, $password, $code");
-      // Call your signup API here
     }
   }
 
@@ -84,7 +106,7 @@ class _SignupScreenState extends State<SignupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Country picker
+                // Country Picker
                 CountryPickerWidget(
                   onCountrySelected: (country) {
                     _selectedCountry = country;
@@ -92,7 +114,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Email + Get verification code (grouped)
+                // Email + Get verification code
                 InputField(
                   controller: _emailController,
                   prefixIcon: Icons.email_outlined,
@@ -101,7 +123,8 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(height: 12),
                 RoundedButton(
                   lable: 'Get verification code',
-                  onTap: _getVerifactionCode,
+                  isUploading: _isUploading,
+                  onTap: _getVerificationCode,
                 ),
                 const SizedBox(height: 24),
 
@@ -110,9 +133,10 @@ class _SignupScreenState extends State<SignupScreen> {
                   controller: _verificationController,
                   prefixIcon: Icons.lock_outline,
                   hintText: "Verification code",
-                  obscureText: true,
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Please enter verification code';
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter verification code';
+                    }
                     return null;
                   },
                 ),
@@ -124,7 +148,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   prefixIcon: Icons.person_outline,
                   hintText: "Full Name",
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Please enter name';
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter name';
+                    }
                     return null;
                   },
                 ),
@@ -137,8 +163,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   hintText: "Password",
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Please enter password';
-                    if (value.length < 6) return 'Password must be at least 6 characters';
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
                     return null;
                   },
                 ),
@@ -146,8 +176,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 // Sign Up button
                 RoundedButton(
-                  isUploading: _isUploading,
                   lable: 'Sign Up',
+                  isUploading: _isUploading,
                   onTap: _onSubmitted,
                 ),
                 const SizedBox(height: 24),
@@ -160,7 +190,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()),
                         );
                       },
                       child: const Text("Login"),
