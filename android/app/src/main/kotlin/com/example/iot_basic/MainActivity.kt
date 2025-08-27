@@ -9,6 +9,8 @@ import com.thingclips.smart.sdk.api.IResultCallback
 import com.thingclips.smart.android.user.api.IRegisterCallback
 import com.thingclips.smart.android.user.bean.User
 import com.thingclips.smart.home.sdk.ThingHomeSdk
+import com.thingclips.smart.android.user.api.ILoginCallback
+
 
 class MainActivity: FlutterActivity() {
 
@@ -38,6 +40,7 @@ class MainActivity: FlutterActivity() {
                     when (call.method) {
                         "getVerificationCode" -> handleGetVerificationCode(call, result)
                         "signupWithVerificationCode" -> handleSignup(call, result)
+                        "userLogin" -> handleUserLogin(call, result)
                         else -> result.notImplemented()
                     }
                 } catch (e: Exception) {
@@ -75,6 +78,22 @@ class MainActivity: FlutterActivity() {
                 result.error("INVALID_PARAMS", "Missing parameters", null)
             } else {
                 signupWithVerificationCode(email, countryCode, verificationCode, password, result)
+            }
+        } catch (e: Exception) {
+            result.error("EXCEPTION", e.message, null)
+        }
+    }
+
+    private fun handleUserLogin(call: MethodCall, result: MethodChannel.Result) {
+        try {
+            val email = call.argument<String>("email")
+            val password = call.argument<String>("password")
+            val countryCode = call.argument<String>("countryCode")
+
+            if (email.isNullOrEmpty() || password.isNullOrEmpty() || countryCode.isNullOrEmpty()) {
+                result.error("INVALID_PARAMS", "Missing parameters", null)
+            } else {
+                userLogin(countryCode,email, password,  result)
             }
         } catch (e: Exception) {
             result.error("EXCEPTION", e.message, null)
@@ -132,10 +151,25 @@ class MainActivity: FlutterActivity() {
         }
     }
 
+    private fun userLogin( countryCode: String, email: String, password: String, result: MethodChannel.Result){
+        try{
+            ThingHomeSdk.getUserInstance().loginWithEmail( countryCode,email, password, object : ILoginCallback {
+                override fun onError(code: String?, error: String?) {
+                    result.error(code ?: "ERROR", error ?: "Login failed", null)
+                }
+
+                override fun onSuccess(user: User?) {
+                    result.success("Login successful")
+                }
+            })
+        } catch (e: Exception) {
+            result.error("EXCEPTION", e.message, null)
+        }
+    }
+
     override fun onDestroy() {
         try {
             super.onDestroy()
-            // Destroy Tuya cloud connection when app exits
             ThingHomeSdk.onDestroy()
         } catch (e: Exception) {
             e.printStackTrace()

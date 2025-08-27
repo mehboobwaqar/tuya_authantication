@@ -1,10 +1,10 @@
 import 'package:flutter/services.dart';
 
-class Channels {
-  static const platform = MethodChannel("com.iot.basic.channel");
+
+const platform = MethodChannel("com.iot.basic.channel");
 
   // Get Verification Code
-  static Future<String> getVerificationCode(Map<String, dynamic> data) async {
+  Future<String> getVerificationCode(Map<String, dynamic> data) async {
     try {
       final result = await platform.invokeMethod('getVerificationCode', data);
       return result.toString();
@@ -16,7 +16,7 @@ class Channels {
   }
 
   // Signup with Verification Code
-  static Future<String> signupWithVerificationCode(
+  Future<String> signupWithVerificationCode(
       Map<String, String> data) async {
     try {
       final result =
@@ -28,4 +28,4 @@ class Channels {
       return "Unexpected error: $e";
     }
   }
-}
+
