@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iot_basic/channels/login_channel.dart';
+import 'package:iot_basic/ui/authantication/reset_password_screen.dart';
+import 'package:iot_basic/ui/authantication/signup_screen.dart';
 import 'package:iot_basic/ui/home/homeScreen.dart';
 import 'package:iot_basic/widget/input_field.dart';
 import 'package:iot_basic/widget/rounded_button.dart';
@@ -38,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if ( _selectedCountry == null) {
+    if (_selectedCountry == null) {
       Utils.snackBar("Please select your country", Colors.red, context);
       return;
     }
@@ -78,7 +80,6 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              
                 Text(
                   "Welcome Back!",
                   style: TextStyle(
@@ -103,11 +104,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 20),
 
-                  CountryPickerWidget(
-                    onCountrySelected: (country) {
-                      setState(() => _selectedCountry = country);
-                    },
-                  ),
+                CountryPickerWidget(
+                  onCountrySelected: (country) {
+                    setState(() => _selectedCountry = country);
+                  },
+                ),
 
                 const SizedBox(height: 20),
 
@@ -149,7 +150,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: (){
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => const ResetPasswordScreen()),
+                      );
+                    },
+                    child: const Text(
+                      "Forgot Password?",
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
 
                 RoundedButton(
                   lable: 'Login',
@@ -167,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                              builder: (context) => const Homescreen()),
+                              builder: (context) => const SignupScreen()),
                         );
                       },
                       child: const Text("Sign Up"),

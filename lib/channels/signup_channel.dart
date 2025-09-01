@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 
 const platform = MethodChannel("com.iot.basic.channel");
 
-  // Get Verification Code
   Future<String> getVerificationCode(Map<String, dynamic> data) async {
     try {
       final result = await platform.invokeMethod('getVerificationCode', data);
@@ -15,9 +14,9 @@ const platform = MethodChannel("com.iot.basic.channel");
     }
   }
 
-  // Signup with Verification Code
+
   Future<String> signupWithVerificationCode(
-      Map<String, String> data) async {
+      Map<String, dynamic> data) async {
     try {
       final result =
           await platform.invokeMethod('signupWithVerificationCode', data);

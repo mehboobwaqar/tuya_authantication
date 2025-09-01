@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iot_basic/channels/reset_password.dart';
 import 'package:iot_basic/channels/signup_channel.dart';
 import 'package:iot_basic/ui/authantication/login_screen.dart';
 import 'package:iot_basic/utils/utils.dart';
@@ -9,32 +10,30 @@ import 'package:iot_basic/widget/rounded_button.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:iot_basic/widget/toggle_button.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _verificationController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   Country? _selectedCountry;
   bool _isUploading = false;
   bool _isEmailMode = true;
-  int _type = 1;
+  int _type = 3;
 
   @override
   void dispose() {
     _emailController.dispose();
     _phoneController.dispose();
     _verificationController.dispose();
-    _nameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -62,7 +61,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
     setState(() => _isUploading = true);
 
-
     final response = await getVerificationCode({
       "email": _isEmailMode ? _emailController.text : "",
       "phoneNo": !_isEmailMode ? _phoneController.text : "",
@@ -85,7 +83,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isUploading = true);
 
-      final response = await signupWithVerificationCode({
+      final response = await resetPasswordEmail({
         "email": _isEmailMode ? _emailController.text : "",
         "phone": !_isEmailMode ? _phoneController.text : "",
         "country": _selectedCountry!.name,
@@ -96,8 +94,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
       setState(() => _isUploading = false);
 
-      if (response.toLowerCase().contains("user registered successfully")) {
-        Utils.snackBar("Signup Successful", Colors.blue, context);
+      if (response.contains("Password reset successful with email")) {
+        Utils.snackBar("Password reset successful", Colors.blue, context);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
@@ -163,23 +161,12 @@ class _SignupScreenState extends State<SignupScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
-                InputField(
-                  controller: _nameController,
-                  prefixIcon: Icons.person_outline,
-                  hintText: "Full Name",
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter name';
-                    }
-                    return null;
-                  },
-                ),
+               
                 const SizedBox(height: 16),
                 InputField(
                   controller: _passwordController,
                   prefixIcon: Icons.lock_outline,
-                  hintText: "Password",
+                  hintText: "New Password",
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -193,26 +180,10 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 24),
                 RoundedButton(
-                  lable: 'Sign Up',
+                  lable: 'Reset Password',
                   isUploading: _isUploading,
                   onTap: _onSubmitted,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Already have an account? "),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => const LoginScreen()),
-                        );
-                      },
-                      child: const Text("Login"),
-                    ),
-                  ],
-                ),
+                ), 
               ],
             ),
           ),
