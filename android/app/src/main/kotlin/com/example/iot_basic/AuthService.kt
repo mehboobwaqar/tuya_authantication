@@ -29,7 +29,7 @@ class AuthService {
         "",
         countryCode,
         type,
-        object : IResultCallback {  // ✅ Correct callback
+        object : IResultCallback {  
             override fun onError(code: String?, error: String?) {
                 callback(false, error ?: "Unknown error")
             }
